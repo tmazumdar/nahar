@@ -1,35 +1,41 @@
-Landed by HTML5 UP
-html5up.net | @ajlkn
-Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+# Self-hosting project on pi
 
+This project was an experiment to learn to self-host a website on a raspberry pi, and expose it to the internet.
+After some reading, learning and testing, the takeaway is that it is very do-able. 
+For static sites, the traffic (requests/bandwidth) is easily manageable with home internet. Hence [nahar](https://nahar.cc) was born..
+The next phase is to add a service-layer and analyze the resource usage and scalability potential.
 
-A dark, slick, modern, responsive, adjective-drenched design built around an extremely
-dynamic landing page (scroll that mofo!). Inspired by Big Picture, another design
-of mine with a similarish feel/flow, only this time I took it waaaaaay further and
-actually made it multipurpose (versus copping out and making it a one pager like I
-did last time ;) Includes multiple pages, a bunch of pre-styled elements, and all
-its Sass sources.
+# Related tools
+- [system-monitor](https://github.com/tmazumdar/system-monitor)
+- [Cloudflare](https://www.cloudflare.com/)
 
-Demo images* courtesy of Unsplash, a radtastic collection of CC0 (public domain) images
-you can use for pretty much whatever.
+# Guides
 
-(* = Not included)
+https://samhobbs.co.uk/2014/02/how-install-wordpress-raspberry-pi
 
-Feedback, bug reports, and comments are not only welcome, but strongly encouraged :)
+https://fireship.io/lessons/host-website-raspberry-pi/
 
-AJ
-aj@lkn.io | @ajlkn
+https://www.nano-editor.org/dist/latest/cheatsheet.html
 
+https://github.com/ddclient/ddclient/blob/main/ddclient.conf.in
 
-Credits:
+# Documentation
 
-	Demo Images:
-		Unsplash (unsplash.com)
+DNS Lookup occurs behind the scenes. 
 
-	Icons:
-		Font Awesome (fontawesome.io)
+https://www.cloudflare.com/learning/dns/what-is-dns/
 
-	Other:
-		jQuery (jquery.com)
-		Scrollex (github.com/ajlkn/jquery.scrollex)
-		Responsive Tools (github.com/ajlkn/responsive-tools)
+In order to host a website on an IOT device, it needs a static External IP.
+The IP needs to be registed with a DNS service so that it can be looked up externally.
+
+![image](https://github.com/user-attachments/assets/595e05ef-6d58-46f3-8031-4514255d7c3a)
+
+# Prerequisites
+1. nginx - install, to configure: add server block to nginx.conf (`sudo nano /etc/nginx/sites-enabled/default`)
+2. add port forwarding to router config for ports 80, 443
+3. ddclient - checks dyndns (http://checkip.dyndns.org/) to get current IP and updates to cloudflare server
+using API Token (privileges: Zone.DNS.Edit, Zone.Zone.Read). Configured to run as service every 600s (`sudo nano /etc/ddclient.conf`)
+4. certbot - install, new cert `sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com`, auto-renew `sudo certbot renew --dry-run`
+5. cloudflare - DNS A Records (yourdomain.com, www.yourdomain.com) with external IP, set SSL/TLS to Full(strict)
+6. ufw - linux uncomplicated firewall - ensure nginx is allowed `sudo ufw allow 'Nginx Full'`
+7. timeshift - run and retain atleast 1 backup of server on separate disk/usb drive
